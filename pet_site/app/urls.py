@@ -13,4 +13,13 @@ urlpatterns=[
 
 
 #--------------------user-----------------------------
+
+    path('register',views.register),
+    path('otp',views.otp_confirmation),
+    path('user_home',views.user_home),
+    path('add_pets',views.addpets),
+    
+
+
+
 ]    

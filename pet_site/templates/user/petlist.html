@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <h2>Available Pets for Adoption</h2>
+<ul>
+    {% for pet in pets %}
+        <li>
+            <img src="{{ pet.image.url }}" alt="{{ pet.name }}" width="100">
+            <strong>{{ pet.name }}</strong> - {{ pet.breed }} - {{ pet.age }} years old
+            <p>{{ pet.description }}</p>
+            <p>Category: {{ pet.category.name }} | Type: {{ pet.pet_type.name }}</p>
+            {% if not pet.is_adopted %}
+                <a href="#">Adopt this Pet</a>
+            {% else %}
+                <p>This pet has already been adopted.</p>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
