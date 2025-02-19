@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Pet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            padding: 2rem;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"], input[type="number"], textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 0.7rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Edit Pet: {{ pet.pet_name }}</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="pet_name">Pet Name</label>
+                <input type="text" name="pet_name" id="pet_name" value="{{ pet.pet_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_description">Description</label>
+                <textarea name="pet_description" id="pet_description" required>{{ pet.pet_description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_age">Age</label>
+                <input type="number" name="pet_age" id="pet_age" value="{{ pet.pet_age }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_breed">Breed</label>
+                <input type="text" name="pet_breed" id="pet_breed" value="{{ pet.pet_breed }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_price">Price</label>
+                <input type="number" name="pet_price" id="pet_price" value="{{ pet.pet_price }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="pet_type">Type</label>
+                <select name="pet_type" id="pet_type" required>
+                    <option value="Dog" {% if pet.pet_type.name == 'Dog' %}selected{% endif %}>Dog</option>
+                    <option value="Cat" {% if pet.pet_type.name == 'Cat' %}selected{% endif %}>Cat</option>
+                    <!-- Add other pet types as necessary -->
+                </select>
+            </div>
+            
+
+            <div class="form-group">
+                <label for="pet_image">Image</label>
+                <input type="file" name="pet_image" id="pet_image">
+                {% if pet.pet_image %}
+                    <img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}" style="width: 100px;">
+                {% endif %}
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+</body>
+</html>

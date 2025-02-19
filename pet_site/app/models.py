@@ -2,20 +2,34 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
-# class Category(models.Model):
-#     categories=models.TextField()
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class PetType(models.Model):
-    Pet_Type = models.TextField()    
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class Pet(models.Model):
-    Pet_Type=models.ForeignKey(PetType,on_delete=models.CASCADE)
-    p_name=models.TextField()
-    p_dis=models.TextField()
-    breed=models.TextField()
-    p_age=models.IntegerField()
-    price=models.IntegerField()
-    p_img=models.FileField() 
+    pet_name = models.CharField(max_length=100)
+    pet_description = models.TextField()
+    pet_age = models.IntegerField()
+    pet_image = models.ImageField(upload_to='pet_images/')
+    pet_price = models.IntegerField()
+    pet_breed = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    pet_type = models.ForeignKey(PetType, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.pet_name} ({self.pet_breed})"
+
+   
+
        
 
 

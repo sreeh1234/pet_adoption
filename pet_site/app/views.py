@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from .models import *
@@ -49,6 +49,16 @@ def admin_home(req):
         return render(req,'admin/home.html')
     else:
         return redirect(pet_login)
+    
+def cat(req):
+    if req.method=="POST":
+        categories=req.POST['category']
+        data=Category.objects.create(categories=categories)
+        data.save()
+        return redirect(cat)
+    else:
+        data=Category.objects.all()
+        return render(req,'admin/category.html',{'data':data})     
 
 
 
@@ -110,20 +120,121 @@ def user_home(req):
     else:
         return redirect(pet_login)
     
-def addpets(req):
-    if 'user' in req.session:
-        if req.method=='POST':
-            pet_type=req.POST['p_type']
-            pet_name=req.POST['p_name']
-            pet_dis=req.POST['p_dis']
-            pet_breed=req.POST['p_breed']
-            pet_price=req.POST['p_price']
-            pet_img=req.FILES['p_img']
-            data=Pet.objects.create(p_name=pet_name,p_dis=pet_dis,p_breed=pet_breed,p_price=pet_price,p_img=pet_img,Pet_Type=PetType.objects.get(PetType=pet_type))
-            data.save()
-            return redirect(user_home)
-        else:
-            data=PetType.objects.all()
-            return render(req,'user/addpets.html')  
-    else:
-        return redirect(pet_login)    
+
+
+def add_pet(request):
+    categories = Category.objects.all()
+    pet_types = PetType.objects.all()
+
+    if request.method == 'POST':
+        pet_name = request.POST.get('pet_name')
+        pet_description = request.POST.get('pet_description')
+        pet_age = request.POST.get('pet_age')
+        pet_price = request.POST.get('pet_price')
+        pet_breed = request.POST.get('pet_breed')
+        category_id = request.POST.get('category')
+        pet_type_id = request.POST.get('pet_type')
+        pet_image = request.FILES.get('pet_image')  
+        category = Category.objects.get(id=category_id)
+        pet_type = PetType.objects.get(id=pet_type_id)
+        
+        pet = Pet(
+            pet_name=pet_name,
+            pet_description=pet_description,
+            pet_age=pet_age,
+            pet_price=pet_price,
+            pet_breed=pet_breed,
+            category=category,
+            pet_type=pet_type,
+            pet_image=pet_image
+        )
+        pet.save()
+
+
+        return redirect('pet_list') 
+
+    
+    return render(request, 'user/addpets.html', {'categories': categories, 'pet_types': pet_types})
+  
+
+
+
+
+
+
+def add_category(request):
+    if request.method == 'POST':
+        category_name = request.POST.get('name')
+        category = Category(name=category_name)
+        category.save()
+        
+        
+        messages.success(request, 'Category added successfully!')
+        return redirect('add_category')  
+
+    return render(request, 'user/add_category.html')
+
+
+def add_pet_type(request):
+    if request.method == 'POST':
+        pet_type_name = request.POST.get('name')
+        
+        pet_type = PetType(name=pet_type_name)
+        pet_type.save()
+        
+        messages.success(request, 'Pet type added successfully!')
+        return redirect('add_pet_type')  
+
+    return render(request, 'user/add_pet_type.html')
+
+def pet_detail(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    return render(request, 'user/pet_detail.html', {'pet': pet})
+
+def pet_list(request):
+    pets = Pet.objects.all()[::-1]
+    return render(request, 'user/pet_list.html', {'pets': pets})
+
+
+
+
+# def edit_pet(request, id):
+#     pet = get_object_or_404(Pet, id=id)
+
+#     if request.method == 'POST':
+#         pet.pet_name = request.POST.get('pet_name', pet.pet_name)
+#         pet.pet_description = request.POST.get('pet_description', pet.pet_description)
+#         pet.pet_age = request.POST.get('pet_age', pet.pet_age)
+#         pet.pet_breed = request.POST.get('pet_breed', pet.pet_breed)
+#         pet.pet_price = request.POST.get('pet_price', pet.pet_price)
+#         pet.category = request.POST.get('category', pet.category)
+
+#         # Handling file input (image)
+#         if request.FILES.get('pet_image'):
+#             pet.pet_image = request.FILES['pet_image']
+
+#         # Handling pet_type assignment with error checking
+#         pet_type_name = request.POST.get('pet_type')
+#         try:
+#             pet_type_instance = PetType.objects.get(name=pet_type_name)
+#             pet.pet_type = pet_type_instance
+#         except PetType.DoesNotExist:
+#             # Handle the case where pet_type doesn't exist
+#             return render(request, 'user/edit_pet.html', {'pet': pet, 'error': 'Invalid pet type selected.'})
+
+#         pet.save()  # Save the updated pet object
+#         return redirect('pet_detail', id=pet.id)
+
+#     return render(request, 'user/edit_pet.html', {'pet': pet})
+
+
+
+def delete_pet(request, id):
+    pet = get_object_or_404(Pet, id=id)
+
+    if request.method == 'POST':
+        pet.delete()
+        return redirect('pet_list')
+
+    return render(request, 'confirm_delete.html', {'pet': pet})
+
