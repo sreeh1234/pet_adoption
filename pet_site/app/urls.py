@@ -22,7 +22,7 @@ urlpatterns=[
     path('add-pet-type', views.add_pet_type, name='add_pet_type'),
     path('pet-list', views.pet_list, name='pet_list'),
     path('pet-detail/<int:pet_id>', views.pet_detail, name='pet_detail'),
-    # path('pet/<int:id>/edit/', views.edit_pet, name='edit_pet'),
+    path('pet/edit/<int:pet_id>', views.edit_pet, name='edit_pet'),
     path('pet/<int:id>/delete/', views.delete_pet, name='delete_pet'),
     
 

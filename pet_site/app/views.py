@@ -198,34 +198,87 @@ def pet_list(request):
 
 
 
-# def edit_pet(request, id):
-#     pet = get_object_or_404(Pet, id=id)
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Pet, Category, PetType
 
-#     if request.method == 'POST':
-#         pet.pet_name = request.POST.get('pet_name', pet.pet_name)
-#         pet.pet_description = request.POST.get('pet_description', pet.pet_description)
-#         pet.pet_age = request.POST.get('pet_age', pet.pet_age)
-#         pet.pet_breed = request.POST.get('pet_breed', pet.pet_breed)
-#         pet.pet_price = request.POST.get('pet_price', pet.pet_price)
-#         pet.category = request.POST.get('category', pet.category)
+def edit_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)  # Retrieve the pet to edit
+    categories = Category.objects.all()
+    pet_types = PetType.objects.all()
 
-#         # Handling file input (image)
-#         if request.FILES.get('pet_image'):
-#             pet.pet_image = request.FILES['pet_image']
+    if request.method == 'POST':
+        pet_name = request.POST.get('pet_name')
+        pet_description = request.POST.get('pet_description')
+        pet_age = request.POST.get('pet_age')
+        pet_price = request.POST.get('pet_price')
+        pet_breed = request.POST.get('pet_breed')
+        category_id = request.POST.get('category')
+        pet_type_id = request.POST.get('pet_type')
+        pet_image = request.FILES.get('pet_image')
 
-#         # Handling pet_type assignment with error checking
-#         pet_type_name = request.POST.get('pet_type')
-#         try:
-#             pet_type_instance = PetType.objects.get(name=pet_type_name)
-#             pet.pet_type = pet_type_instance
-#         except PetType.DoesNotExist:
-#             # Handle the case where pet_type doesn't exist
-#             return render(request, 'user/edit_pet.html', {'pet': pet, 'error': 'Invalid pet type selected.'})
+        # Basic validation
+        if not pet_name or not pet_description or not pet_age or not pet_price or not pet_breed:
+            messages.error(request, "All fields are required.")
+            return render(request, 'user/edit_pet.html', {
+                'pet': pet,
+                'categories': categories,
+                'pet_types': pet_types
+            })
 
-#         pet.save()  # Save the updated pet object
-#         return redirect('pet_detail', id=pet.id)
+        try:
+            pet_age = int(pet_age)
+            pet_price = int(pet_price)
+        except ValueError:
+            messages.error(request, "Age and price must be numbers.")
+            return render(request, 'user/edit_pet.html', {
+                'pet': pet,
+                'categories': categories,
+                'pet_types': pet_types
+            })
 
-#     return render(request, 'user/edit_pet.html', {'pet': pet})
+        try:
+            category = Category.objects.get(id=category_id)
+            pet_type = PetType.objects.get(id=pet_type_id)
+        except Category.DoesNotExist:
+            messages.error(request, "Invalid category.")
+            return render(request, 'user/edit_pet.html', {
+                'pet': pet,
+                'categories': categories,
+                'pet_types': pet_types
+            })
+        except PetType.DoesNotExist:
+            messages.error(request, "Invalid pet type.")
+            return render(request, 'user/edit_pet.html', {
+                'pet': pet,
+                'categories': categories,
+                'pet_types': pet_types
+            })
+
+        # Update the pet with the new values
+        pet.pet_name = pet_name
+        pet.pet_description = pet_description
+        pet.pet_age = pet_age
+        pet.pet_price = pet_price
+        pet.pet_breed = pet_breed
+        pet.category = category
+        pet.pet_type = pet_type
+
+        if pet_image:  # Only update the image if a new one is provided
+            pet.pet_image = pet_image
+
+        pet.save()
+
+        messages.success(request, "Pet updated successfully.")
+        return redirect('pet_list')  # Redirect to the pet list page
+
+    # Pre-fill the form with existing pet details for GET request
+    return render(request, 'user/edit_pet.html', {
+        'pet': pet,
+        'categories': categories,
+        'pet_types': pet_types
+    })
+
 
 
 
@@ -236,5 +289,5 @@ def delete_pet(request, id):
         pet.delete()
         return redirect('pet_list')
 
-    return render(request, 'confirm_delete.html', {'pet': pet})
+    return render(request, 'user/confirm_delete.html', {'pet': pet})
 

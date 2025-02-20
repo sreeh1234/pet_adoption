@@ -29,6 +29,20 @@ class Pet(models.Model):
         return f"{self.pet_name} ({self.pet_breed})"
 
    
+from django.db import models
+
+class Address(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    building_no = models.CharField(max_length=100)
+    street = models.CharField(max_length=255)
+    state = models.CharField(max_length=100)
+    district = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=6)  
+    mobile_no = models.CharField(max_length=15)  
+
+    def __str__(self):
+        return f"{self.name}, {self.building_no}, {self.street}, {self.state}, {self.district} - {self.pincode}"
 
        
 
