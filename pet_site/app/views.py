@@ -32,7 +32,7 @@ def pet_login(req):
             messages.warning(req,'invalid username or password')
             return redirect(pet_login)
     else:
-        return render(req,'login.html')
+        return render(req,'user/login.html')
 
 def pet_logout(req):
     logout(req)
@@ -71,7 +71,7 @@ def register(req):
         email = req.POST['email']
         pswd = req.POST['pswd']
         try:
-            data = User.objects.create_user(first_name=uname,email=email,username=email,password=pswd)
+            data = User.objects.create_user(first_name=uname, email=email, username=email, password=pswd)
             data.save()
             otp = ""
             for i in range(6):
@@ -172,7 +172,7 @@ def add_category(request):
         messages.success(request, 'Category added successfully!')
         return redirect('add_category')  
 
-    return render(request, 'user/addcategory.html')
+    return render(request, 'user/add_category.html')
 
 
 def add_pet_type(request):
@@ -191,19 +191,15 @@ def pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     return render(request, 'user/pet_detail.html', {'pet': pet})
 
+
 def pet_list(request):
     pets = Pet.objects.all()[::-1]
     return render(request, 'user/pet_list.html', {'pets': pets})
 
 
 
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Pet, Category, PetType
-
 def edit_pet(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)  # Retrieve the pet to edit
+    pet = get_object_or_404(Pet, id=pet_id)  
     categories = Category.objects.all()
     pet_types = PetType.objects.all()
 
@@ -253,7 +249,7 @@ def edit_pet(request, pet_id):
                 'categories': categories,
                 'pet_types': pet_types
             })
-        
+
         pet.pet_name = pet_name
         pet.pet_description = pet_description
         pet.pet_age = pet_age
@@ -262,19 +258,19 @@ def edit_pet(request, pet_id):
         pet.category = category
         pet.pet_type = pet_type
 
-        if pet_image:  
+        if pet_image: 
             pet.pet_image = pet_image
-
         pet.save()
 
         messages.success(request, "Pet updated successfully.")
         return redirect('pet_list')  
-
+    
     return render(request, 'user/edit_pet.html', {
         'pet': pet,
         'categories': categories,
         'pet_types': pet_types
     })
+
 
 
 
@@ -284,5 +280,6 @@ def delete_pet(request, id):
     if request.method == 'POST':
         pet.delete()
         return redirect('pet_list')
+
     return render(request, 'user/confirm_delete.html', {'pet': pet})
 
