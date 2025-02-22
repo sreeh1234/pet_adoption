@@ -27,14 +27,14 @@
                             <p><span>Age:</span> {{ pet.pet_age }} years</p>
                             <p><span>Description:</span> {{ pet.pet_description|truncatewords:20 }}</p>
                         </div>
-                        <a href="{% url 'pet_detail' pet.id %}" class="btn">View Details</a>
-                        
+                        <a href="{% url 'pet_detail' pet.id %}" style="display: inline;" class="btn">View Details</a>
+                        <a href="{% url 'delete_pet' pet.id %}" style="display: inline;" class="btn">Delete</a>
+                        <a href="{% url 'edit_pet' pet.id %}"  class="btn ">edit</a>
                         <!-- <form method="POST" action="{% url 'delete_pet' pet.id %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="delete-btn">Delete</button>
                         </form> -->
-                        <a href="{% url 'delete_pet' pet.id %}" style="display: inline;" class="btn">Delete</a>
-                        <a href="{% url 'edit_pet' pet.id %}" style="display: inline;" class="btn">edit</a>
+                        
                     </div>
                 {% endfor %}
             </div>

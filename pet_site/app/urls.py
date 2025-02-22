@@ -10,7 +10,6 @@ urlpatterns=[
 #--------------------admin----------------------------
 
     path('admin_home',views.admin_home),
-    path('cat',views.cat),
 
 #--------------------user-----------------------------
 
